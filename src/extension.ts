@@ -48,6 +48,21 @@ export function activate(context: vscode.ExtensionContext) {
 export function deactivate() {
 }
 
+function getLinuxDistro(): string | null {
+    const osReleasePath = '/etc/os-release';
+    if (fs.existsSync(osReleasePath)) {
+        const osReleaseContent = fs.readFileSync(osReleasePath, 'utf-8');
+        const lines = osReleaseContent.split('\n');
+        for (const line of lines) {
+            if (line.startsWith('NAME=')) {
+                // Remove the leading 'NAME=' and any quotes around the value
+                return line.replace('NAME=', '').replace(/"/g, '').trim();
+            }
+        }
+    }
+    return null;
+}
+
 class Paster {
     static PATH_VARIABLE_CURRNET_FILE_DIR = /\$\{currentFileDir\}/g;
     static PATH_VARIABLE_PROJECT_ROOT = /\$\{projectRoot\}/g;
@@ -339,8 +354,12 @@ class Paster {
             });
         } else {
             // Linux 
-
-            let scriptPath = path.join(__dirname, '../../res/linux.sh');
+            const distro = getLinuxDistro();
+            if (distro && distro.toLowerCase() === 'ubuntu') {
+                let scriptPath = path.join(__dirname, '../../res/linux_cinammon.sh');
+            } else {
+                let scriptPath = path.join(__dirname, '../../res/linux.sh');
+            }
 
             let ascript = spawn('sh', [scriptPath, imagePath]);
             ascript.on('error', function (e) {
