@@ -9,9 +9,10 @@ RUN apt-get update && apt-get -y install --no-install-recommends neovim git bash
 RUN git clone https://github.com/altr/dotfiles && echo "cloned"
 
 # configure terminal & fonts
-# RUN /dotfiles/font_install.sh
-# RUN rm -r /dotfiles
+RUN /dotfiles/font_install.sh
+RUN rm -r /dotfiles
 
-# configure git as vscode user
+# configure git as node user
+USER node
 RUN git config --global user.email 'alain@altr.ch' && git config --global user.name 'Al'
 RUN /dotfiles/bash_setup.sh
