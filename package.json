@@ -1,12 +1,12 @@
 {
   "name": "vscode-paste-image",
-  "displayName": "Paste Image",
+  "displayName": "Paste Image (Altr)",
   "description": "paste image from clipboard directly",
-  "version": "1.0.4",
-  "publisher": "mushan",
+  "version": "1.0.6",
+  "publisher": "altr",
   "author": {
-    "name": "mushan",
-    "email": "mushanmail@126.com"
+    "name": "altr",
+    "email": "al@altr.ch"
   },
   "repository": {
     "type": "git",
