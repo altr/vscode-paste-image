@@ -168,7 +168,7 @@ class Paster {
                 if (existed) {
                     Logger.showInformationMessage(`File ${imagePath} existed.Would you want to replace?`, 'Replace', 'Cancel').then(choose => {
                         if (choose != 'Replace') return;
-                        
+
                         instance.saveAndPaste(editor, imagePath);
                     });
                 } else {
@@ -213,7 +213,7 @@ class Paster {
         });
     }
 
-    public static getImagePath(filePath: string, selectText: string, folderPathFromConfig: string, 
+    public static getImagePath(filePath: string, selectText: string, folderPathFromConfig: string,
         showFilePathConfirmInputBox: boolean, filePathConfirmInputBoxMode: string,
         callback: (err, imagePath: string) => void) {
         // image file name
@@ -225,7 +225,7 @@ class Paster {
         }
 
         let filePathOrName;
-        if(filePathConfirmInputBoxMode == Paster.FILE_PATH_CONFIRM_INPUTBOX_MODE_PULL_PATH){
+        if (filePathConfirmInputBoxMode == Paster.FILE_PATH_CONFIRM_INPUTBOX_MODE_PULL_PATH) {
             filePathOrName = makeImagePath(imageFileName);
         } else {
             filePathOrName = imageFileName;
@@ -238,8 +238,8 @@ class Paster {
             }).then((result) => {
                 if (result) {
                     if (!result.endsWith('.png')) result += '.png';
-                    
-                    if(filePathConfirmInputBoxMode == Paster.FILE_PATH_CONFIRM_INPUTBOX_MODE_ONLY_NAME){
+
+                    if (filePathConfirmInputBoxMode == Paster.FILE_PATH_CONFIRM_INPUTBOX_MODE_ONLY_NAME) {
                         result = makeImagePath(result);
                     }
 
@@ -325,10 +325,11 @@ class Paster {
                 imagePath
             ]);
             powershell.on('error', function (e) {
-                if (e.code == "ENOENT") {
+                const err = e as NodeJS.ErrnoException; // Cast to NodeJS.ErrnoException
+                if (err.code == "ENOENT") {
                     Logger.showErrorMessage(`The powershell command is not in you PATH environment variables. Please add it and retry.`);
                 } else {
-                    Logger.showErrorMessage(e);
+                    Logger.showErrorMessage(err.message);
                 }
             });
             powershell.on('exit', function (code, signal) {
@@ -344,7 +345,8 @@ class Paster {
 
             let ascript = spawn('osascript', [scriptPath, imagePath]);
             ascript.on('error', function (e) {
-                Logger.showErrorMessage(e);
+                const err = e as NodeJS.ErrnoException; // Cast to NodeJS.ErrnoException
+                Logger.showErrorMessage(err.message);
             });
             ascript.on('exit', function (code, signal) {
                 // console.log('exit',code,signal);
@@ -355,15 +357,17 @@ class Paster {
         } else {
             // Linux 
             const distro = getLinuxDistro();
+            let scriptPath
             if (distro && distro.toLowerCase() === 'ubuntu') {
-                let scriptPath = path.join(__dirname, '../../res/linux_cinammon.sh');
+                scriptPath = path.join(__dirname, '../../res/linux_cinammon.sh');
             } else {
-                let scriptPath = path.join(__dirname, '../../res/linux.sh');
+                scriptPath = path.join(__dirname, '../../res/linux.sh');
             }
 
             let ascript = spawn('sh', [scriptPath, imagePath]);
             ascript.on('error', function (e) {
-                Logger.showErrorMessage(e);
+                const err = e as NodeJS.ErrnoException; // Cast to NodeJS.ErrnoException
+                Logger.showErrorMessage(err.message);
             });
             ascript.on('exit', function (code, signal) {
                 // console.log('exit',code,signal);
